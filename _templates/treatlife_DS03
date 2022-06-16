@@ -171,3 +171,11 @@ light:
     payload_not_available: "Offline"
     retain: false{% endraw %}
 {% endhighlight %}
+
+An alternative to using manual entry is to create an autodiscovery:
+```console
+Rule1 on TuyaReceived#Data=55AA03070005030400010016 do publish2 stat/%topic%/FanSpeed low endon on TuyaReceived#Data=55AA03070005030400010117 do publish2 stat/%topic%/FanSpeed low endon on TuyaReceived#Data=55AA03070005030400010218 do publish2 stat/%topic%/FanSpeed medium endon on TuyaReceived#Data=55AA03070005030400010319 do publish2 stat/%topic%/FanSpeed high endon
+```
+```console
+Rule2 ON Time#Minute|5 DO publish homeassistant/fan/%topic%/config {"name":"%topic%","uniq_id":"%deviceid%","stat_t":"stat/%topic%/POWER1","cmd_t":"cmnd/%topic%/POWER1","pr_mode_stat_t":"stat/%topic%/FanSpeed","pr_mode_cmd_t":"cmnd/%topic%/Backlog","qos":0,"pl_on":"ON","pl_off":"OFF","pr_mode_cmd_tpl":"{%% if value == 'low' %%} TuyaSend4 3,1;Power1 ON {%% elif value == 'medium' %%} TuyaSend4 3,2;Power1 ON {%% elif value == 'high' %%} TuyaSend4 3,3;Power1 ON {%% endif %%}","avty_t": "tele/%topic%/LWT","pl_avail":"Online","pl_not_avail":"Offline","pr_modes":["low","medium","high"]} ENDON
+```
